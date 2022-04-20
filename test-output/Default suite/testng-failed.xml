@@ -6,6 +6,8 @@
       <class name="tests.BaseClass">
         <methods>
           <include name="scrl"/>
+          <include name="startEmulator"/>
+          <include name="startServer"/>
           <include name="screenshot"/>
           <include name="setup"/>
         </methods>

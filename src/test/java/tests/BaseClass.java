@@ -3,30 +3,68 @@ package tests;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.remote.MobileCapabilityType;
+import io.appium.java_client.service.local.AppiumDriverLocalService;
 
 public class BaseClass {
+	
+	
+public static AppiumDriverLocalService service;
+	
+	@BeforeSuite
+	public AppiumDriverLocalService startServer() 
+	{
+	
+		boolean flag=	checkIfServerIsRunnning(4723);
+		if(!flag)
+		{
+		service=AppiumDriverLocalService.buildDefaultService();
+		service.start();
+		}
+	    return service;
+	}
+		
+public static boolean checkIfServerIsRunnning(int port) {
+		
+		boolean isServerRunning = false;
+		ServerSocket serverSocket;
+		try {
+			serverSocket = new ServerSocket(port);
+			
+			serverSocket.close();
+		} catch (IOException e) {
+			//If control comes here, then it means that the port is in use
+			isServerRunning = true;
+		} finally {
+			serverSocket = null;
+		}
+		return isServerRunning;
+		
+		
+	}
+	@BeforeSuite
+   public static void startEmulator() throws IOException, InterruptedException {
+	Runtime.getRuntime().exec(System.getProperty("user.dir")+"\\src\\test\\resources\\startEmulator.bat");
+	Thread.sleep(5000);
+}
+
 
 	static AndroidDriver<AndroidElement> driver;
 	
@@ -45,16 +83,17 @@ public class BaseClass {
 	}
 	
 	@Test
-	public void scrl() 
+	public void scrl() throws InterruptedException 
 	
 	{
 		//AndroidDriver driver = new AndroidDriver(capabilitites);
 		
 	AndroidElement vw = driver.findElement(By.xpath("//android.widget.TextView[@content-desc=\"Views\"]"));
 	vw.click();
+	Thread.sleep(2000);
 	AndroidElement scrl = driver.findElementByAndroidUIAutomator("new UiScrollable(new UiSelector()).scrollIntoView(text(\"TextFields\"));");
 	scrl.click();
-	AndroidElement txt = driver.findElement(By.id("[@text=TextFields"));
+	//AndroidElement txt = driver.findElement(By.id("[@text=TextFields"));
 	}
 	
 	
